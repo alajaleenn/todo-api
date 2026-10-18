@@ -1,3 +1,4 @@
 .env
 todos.db
 __pycache__/
+venv/
