@@ -9,13 +9,20 @@ from dotenv import load_dotenv
 
 
 auth_bp=Blueprint("auth",__name__)
+
 load_dotenv()
 SECRET_KEY = os.environ.get("SECRET_KEY")
+
+
 @auth_bp.route("/register", methods=["POST"])
 def register():
     data=request.get_json()
-    email=data["email"]
-    password=data["password"]
+    email=data.get("email")
+    password=data.get("password")
+    if not email or not password:
+        return jsonify({"error": "email and password are required"}), 400
+
+
     password_hash= bcrypt.hashpw(password.encode(),bcrypt.gensalt())
 
     conn= get_connection()
@@ -28,15 +35,18 @@ def register():
         conn.close()
         return jsonify({"error":"Email already registered"}),409
     
-    conn.close
+    conn.close()
     return jsonify({"message":"User registered"}),201
     
 
 @auth_bp.route("/login",methods=["POST"])
 def login():
     data=request.get_json()
-    email=data["email"]
-    password=data["password"]
+    email=data.get("email")
+    password=data.get("password")
+
+    if not email or not password:
+        return jsonify({"error": "email and password are required"}), 400
 
     conn=get_connection()
     user=conn.execute("SELECT * FROM users WHERE email = ?",(email,)).fetchone()

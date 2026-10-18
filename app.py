@@ -30,12 +30,17 @@ def create_todo():
     if user_id is None:
         return jsonify({"error":"Unauthorized"}),401
     data = request.get_json()
+    task=data.get("task")
+    if not task:
+        return jsonify({"error":"task is required"}),400
+
+
     conn=get_connection()
-    exce = conn.execute("INSERT INTO todos (task , user_id) VALUES (?,?)",(data["task"],user_id))
+    exce = conn.execute("INSERT INTO todos (task , user_id) VALUES (?,?)",(task,user_id))
     conn.commit()
     new_id=exce.lastrowid
     conn.close()
-    return jsonify({"id":new_id,"task":data["task"],"done":False}), 201
+    return jsonify({"id":new_id,"task":task,"done":False}), 201
 
 
 @app.route("/todos/<int:todo_id>" , methods=["PUT"])
