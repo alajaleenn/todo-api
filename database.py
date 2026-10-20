@@ -1,7 +1,13 @@
 import sqlite3
+import os
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 def get_connection():
-    conn= sqlite3.connect("todos.db")
+    db=os.environ.get("DATABASE","todos.db")
+    conn= sqlite3.connect(db)
     conn.row_factory = sqlite3.Row 
     return conn
 
